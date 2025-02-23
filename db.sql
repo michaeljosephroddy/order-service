@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS onlinestore;
 USE onlinestore;
 
-CREATE TABLE customer (
+CREATE TABLE customers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -10,11 +10,178 @@ CREATE TABLE customer (
     total_orders INT DEFAULT 0
 );
 
-CREATE TABLE `order` (
+CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
     product VARCHAR(255) NOT NULL,
     quantity INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
+
+INSERT INTO customers (id, name, email, address, created_at, total_orders) VALUES
+(1, 'John Doe', 'johndoe@email.com', 'TUS Athlone', '2025-02-10 10:00:00', 3),
+(2, 'Alice Smith', 'alice.smith@email.com', 'Dublin, Ireland', '2025-02-11 11:15:00', 2),
+(3, 'Bob Johnson', 'bob.johnson@email.com', 'Galway, Ireland', '2025-02-12 09:45:00', 6),
+(4, 'Emma Brown', 'emma.brown@email.com', 'Limerick, Ireland', '2025-02-13 14:30:00', 5),
+(5, 'Michael White', 'michael.white@email.com', 'Cork, Ireland', '2025-02-14 08:20:00', 5),
+(6, 'Sophia Green', 'sophia.green@email.com', 'TUS Athlone', '2025-02-15 16:05:00', 4),
+(7, 'James Wilson', 'james.wilson@email.com', 'TUS Athlone', '2025-02-16 12:40:00', 4),
+(8, 'Olivia Taylor', 'olivia.taylor@email.com', 'TUS Athlone', '2025-02-17 18:30:00', 4),
+(9, 'Liam Harris', 'liam.harris@email.com', 'TUS Athlone', '2025-02-18 20:10:00', 3),
+(10, 'Isabella Martin', 'isabella.martin@email.com', 'TUS Athlone', '2025-02-19 15:25:00', 6);
+
+-- Insert mock orders with varying customer IDs, products, and timestamps
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(2, 'Laptop', 1, '2025-02-13 16:11:22'),
+(2, 'Wireless Mouse', 2, '2025-02-13 16:13:29'),
+(3, 'Keyboard', 1, '2025-02-14 09:25:00'),
+(3, 'Monitor', 1, '2025-02-14 10:45:00'),
+(3, 'USB-C Hub', 3, '2025-02-14 12:00:00'),
+(3, 'External Hard Drive', 1, '2025-02-14 13:30:00'),
+(4, 'Smartphone', 1, '2025-02-15 11:10:00'),
+(5, 'Tablet', 1, '2025-02-16 14:20:00'),
+(5, 'Smartwatch', 2, '2025-02-16 16:45:00'),
+(5, 'Bluetooth Speaker', 1, '2025-02-16 17:30:00'),
+(5, 'Gaming Headset', 1, '2025-02-16 18:15:00'),
+(6, 'Laptop Stand', 1, '2025-02-17 09:50:00'),
+(7, 'Mechanical Keyboard', 1, '2025-02-18 10:30:00'),
+(7, 'Noise Cancelling Headphones', 2, '2025-02-18 11:20:00'),
+(8, 'Wireless Earbuds', 1, '2025-02-19 12:40:00'),
+(8, 'Fitness Tracker', 1, '2025-02-19 13:55:00'),
+(8, 'Portable SSD', 2, '2025-02-19 14:30:00'),
+(9, 'Gaming Mouse', 1, '2025-02-20 16:05:00'),
+(10, 'Monitor Arm', 1, '2025-02-21 17:15:00'),
+(10, 'Ergonomic Chair', 1, '2025-02-21 18:25:00'),
+(3, 'Graphics Card', 1, '2025-02-22 09:30:00'),
+(4, 'Wireless Charger', 2, '2025-02-22 10:00:00'),
+(5, 'Smart Home Hub', 1, '2025-02-22 11:15:00'),
+(6, 'VR Headset', 1, '2025-02-22 13:45:00'),
+(7, 'USB Flash Drive', 3, '2025-02-22 14:25:00'),
+(8, '4K Webcam', 1, '2025-02-22 15:50:00'),
+(9, 'Portable Power Bank', 2, '2025-02-22 17:10:00'),
+(10, 'Gaming Console', 1, '2025-02-22 18:30:00'),
+(1, 'External Monitor', 1, '2025-02-23 09:00:00'),
+(2, 'Standing Desk', 1, '2025-02-23 10:15:00'),
+(3, 'Smart Doorbell', 2, '2025-02-23 11:30:00'),
+(4, 'Mechanical Pencil Set', 1, '2025-02-23 12:45:00'),
+(5, 'Drawing Tablet', 1, '2025-02-23 14:00:00'),
+(6, 'Bluetooth Adapter', 2, '2025-02-23 15:10:00'),
+(7, 'Smart Mirror', 1, '2025-02-23 16:25:00'),
+(8, 'Smart Light Bulb', 3, '2025-02-23 17:40:00'),
+(9, 'Wireless Printer', 1, '2025-02-23 18:55:00'),
+(10, 'Voice Assistant Speaker', 1, '2025-02-23 19:30:00'),
+(1, 'Wireless Keyboard', 1, '2025-02-24 09:10:00'),
+(1, 'USB Hub', 2, '2025-02-24 10:20:00'),
+(2, 'Laptop Sleeve', 1, '2025-02-24 11:30:00'),
+(2, 'HDMI Cable', 3, '2025-02-24 12:40:00'),
+(3, 'SSD Drive', 1, '2025-02-24 13:50:00'),
+(3, 'Mechanical Mouse', 2, '2025-02-24 14:30:00'),
+(4, 'Ergonomic Desk', 1, '2025-02-24 15:15:00'),
+(4, 'Monitor Stand', 1, '2025-02-24 16:25:00'),
+(5, 'Wireless Router', 1, '2025-02-24 17:35:00'),
+(5, 'USB Extension Cable', 2, '2025-02-24 18:45:00'),
+(6, '4K Monitor', 1, '2025-02-24 19:55:00'),
+(6, 'Mechanical Keyboard', 1, '2025-02-25 09:05:00'),
+(7, 'Gaming Chair', 1, '2025-02-25 10:15:00'),
+(7, 'Trackpad', 2, '2025-02-25 11:25:00'),
+(8, 'Portable SSD', 1, '2025-02-25 12:35:00'),
+(8, 'Webcam Cover', 3, '2025-02-25 13:45:00'),
+(9, 'Noise Cancelling Earbuds', 1, '2025-02-25 14:55:00'),
+(9, 'Bluetooth Speaker', 2, '2025-02-25 16:05:00'),
+(10, 'Smartphone Stand', 1, '2025-02-25 17:15:00'),
+(10, 'Smartwatch Charger', 2, '2025-02-25 18:25:00'),
+(1, 'USB Type-C Cable', 3, '2025-02-25 19:35:00'),
+(1, 'Gaming Mouse Pad', 1, '2025-02-26 09:10:00'),
+(2, 'Ethernet Cable', 2, '2025-02-26 10:20:00'),
+(2, 'Docking Station', 1, '2025-02-26 11:30:00'),
+(3, 'Curved Monitor', 1, '2025-02-26 12:40:00'),
+(3, 'Wireless Keyboard', 2, '2025-02-26 13:50:00'),
+(4, 'Laptop Cooling Pad', 1, '2025-02-26 14:30:00'),
+(4, 'Mechanical Pencil Set', 1, '2025-02-26 15:15:00'),
+(5, 'Drawing Tablet', 1, '2025-02-26 16:25:00'),
+(5, 'Bluetooth Adapter', 2, '2025-02-26 17:35:00'),
+(6, 'Smart Mirror', 1, '2025-02-26 18:45:00'),
+(6, 'Smart Light Bulb', 3, '2025-02-26 19:55:00'),
+(7, 'Wireless Printer', 1, '2025-02-27 09:05:00'),
+(7, 'Voice Assistant Speaker', 1, '2025-02-27 10:15:00'),
+(8, 'Gaming Mouse', 2, '2025-02-27 11:25:00'),
+(8, 'Mechanical Keyboard', 1, '2025-02-27 12:35:00'),
+(9, 'Ergonomic Chair', 1, '2025-02-27 13:45:00'),
+(9, 'Monitor Arm', 1, '2025-02-27 14:55:00'),
+(10, 'Standing Desk', 1, '2025-02-27 16:05:00'),
+(10, 'External Hard Drive', 2, '2025-02-27 17:15:00'),
+(1, 'Smart Home Hub', 1, '2025-02-27 18:25:00'),
+(2, 'Smart Doorbell', 2, '2025-02-27 19:35:00'),
+(3, 'Wireless Charger', 1, '2025-02-28 09:10:00'),
+(3, 'USB Flash Drive', 3, '2025-02-28 10:20:00'),
+(4, '4K Webcam', 1, '2025-02-28 11:30:00'),
+(4, 'Portable Power Bank', 2, '2025-02-28 12:40:00'),
+(5, 'Gaming Console', 1, '2025-02-28 13:50:00'),
+(5, 'External Monitor', 1, '2025-02-28 14:30:00'),
+(6, 'Laptop Stand', 1, '2025-02-28 15:15:00'),
+(6, 'Graphics Card', 1, '2025-02-28 16:25:00'),
+(7, 'USB-C Hub', 3, '2025-02-28 17:35:00'),
+(7, 'External Hard Drive', 1, '2025-02-28 18:45:00');
+
+
+-- Additional mock orders for pagination testing
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(6, 'Bluetooth Speaker', 1, '2025-03-01 09:00:00'),
+(1, 'Wireless Charger', 1, '2025-03-01 10:00:00'),
+(7, 'Wireless Charger', 2, '2025-03-01 11:00:00'),
+(10, 'Gaming Chair', 2, '2025-03-01 12:00:00'),
+(9, 'Mechanical Keyboard', 1, '2025-03-01 13:00:00'),
+(8, 'Gaming Chair', 2, '2025-03-01 14:00:00'),
+(4, 'Ethernet Cable', 3, '2025-03-01 15:00:00'),
+(2, 'Bluetooth Speaker', 2, '2025-03-01 16:00:00'),
+(5, 'Wireless Charger', 1, '2025-03-01 17:00:00'),
+(10, 'Smartphone Stand', 1, '2025-03-01 18:00:00');
+
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(3, 'Docking Station', 1, '2025-03-01 19:00:00'),
+(1, 'Smartphone Stand', 2, '2025-03-01 20:00:00'),
+(2, 'Docking Station', 1, '2025-03-01 21:00:00'),
+(6, 'Bluetooth Speaker', 1, '2025-03-01 22:00:00'),
+(6, 'Mechanical Keyboard', 1, '2025-03-01 23:00:00'),
+(5, 'Monitor Arm', 1, '2025-03-02 00:00:00'),
+(6, 'Ethernet Cable', 1, '2025-03-02 01:00:00'),
+(2, 'Ethernet Cable', 3, '2025-03-02 02:00:00'),
+(4, 'Smartwatch', 3, '2025-03-02 03:00:00'),
+(8, 'Smartwatch', 1, '2025-03-02 04:00:00');
+
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(1, 'Monitor Arm', 3, '2025-03-02 05:00:00'),
+(9, 'Mechanical Keyboard', 1, '2025-03-02 06:00:00'),
+(2, 'Curved Monitor', 3, '2025-03-02 07:00:00'),
+(6, 'Gaming Mouse', 2, '2025-03-02 08:00:00'),
+(10, 'External Hard Drive', 2, '2025-03-02 09:00:00'),
+(10, 'Monitor Arm', 3, '2025-03-02 10:00:00'),
+(1, 'Mechanical Keyboard', 1, '2025-03-02 11:00:00'),
+(3, 'Mechanical Keyboard', 1, '2025-03-02 12:00:00'),
+(3, 'Bluetooth Speaker', 3, '2025-03-02 13:00:00'),
+(7, 'Smartphone Stand', 1, '2025-03-02 14:00:00');
+
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(2, 'Wireless Keyboard', 2, '2025-03-02 15:00:00'),
+(10, 'USB-C Hub', 1, '2025-03-02 16:00:00'),
+(2, 'External Hard Drive', 2, '2025-03-02 17:00:00'),
+(1, 'Smartwatch', 1, '2025-03-02 18:00:00'),
+(10, 'Smartwatch', 3, '2025-03-02 19:00:00'),
+(7, 'Graphics Card', 2, '2025-03-02 20:00:00'),
+(9, 'Monitor Arm', 3, '2025-03-02 21:00:00'),
+(4, 'Mechanical Keyboard', 1, '2025-03-02 22:00:00'),
+(5, 'Wireless Keyboard', 3, '2025-03-02 23:00:00'),
+(3, 'Wireless Keyboard', 3, '2025-03-03 00:00:00');
+
+INSERT INTO orders (customer_id, product, quantity, created_at) VALUES
+(9, 'Bluetooth Speaker', 1, '2025-03-03 01:00:00'),
+(8, 'Ethernet Cable', 3, '2025-03-03 02:00:00'),
+(10, 'Portable SSD', 2, '2025-03-03 03:00:00'),
+(1, 'Portable SSD', 3, '2025-03-03 04:00:00'),
+(3, 'HDMI Cable', 3, '2025-03-03 05:00:00'),
+(2, 'Docking Station', 3, '2025-03-03 06:00:00'),
+(6, 'Portable SSD', 2, '2025-03-03 07:00:00'),
+(9, 'HDMI Cable', 3, '2025-03-03 08:00:00'),
+(9, 'Bluetooth Speaker', 2, '2025-03-03 09:00:00'),
+(2, 'Wireless Keyboard', 1, '2025-03-03 10:00:00');

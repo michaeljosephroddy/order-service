@@ -1,107 +1,142 @@
 package com.example.order_service.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.order_service.model.Customer;
+import com.example.hateoas.OrderModelAssembler;
 import com.example.order_service.model.Order;
+import com.example.order_service.model.OrderDTO;
 import com.example.order_service.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Controller class for managing orders and customers.
- * This class provides RESTful endpoints for creating, retrieving, updating,
- * and deleting customers and orders.
+ * Controller for handling order-related operations.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     @Autowired
-    OrderService orderService;
+    private OrderService orderService;
 
-    /**
-     * Creates a new customer.
-     *
-     * @param customer The customer object to be created.
-     * @return The created customer.
-     */
-    @PostMapping("/customers")
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return orderService.createCustomer(customer);
-    }
+    @Autowired
+    private OrderModelAssembler orderModelAssembler;
 
-    /**
-     * Retrieves all customers.
-     *
-     * @return A list of all customers.
-     */
-    @GetMapping("/customers")
-    public List<Customer> getAllCustomers() {
-        return orderService.getAllCustomers();
-    }
+    @Autowired
+    private PagedResourcesAssembler<Order> pagedResourcesAssembler;
 
     /**
      * Creates a new order.
      *
      * @param order The order object to be created.
-     * @return The created order.
+     * @return The created order as a DTO.
      */
-    @PostMapping("/customers/{id}/orders")
-    public Order createOrder(@RequestBody Order order, @RequestParam int id) {
-        return orderService.createOrder(order, id);
+    @PostMapping
+    public ResponseEntity<OrderDTO> createOrder(@Validated @RequestBody Order order) {
+        Order savedOrder = orderService.createOrder(order);
+        return ResponseEntity.ok(new OrderDTO(savedOrder.getId(), savedOrder.getCreatedAt(), savedOrder.getQuantity()));
     }
 
     /**
-     * Retrieves all orders for a specific customer.
+     * Retrieves a Page of orders for a specific customer.
      *
-     * @param id The ID of the customer.
-     * @return A list of all orders for the specified customer.
+     * @param customerId The ID of the customer.
+     * @return A page of orders for the specified customer as DTOs with HATEOAS
+     *         links.
      */
-    @GetMapping("/customers/{id}/orders")
-    public List<Order> getAllOrders(@PathVariable int id) {
-        return orderService.getAllOrders(id);
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<PagedModel<EntityModel<OrderDTO>>> getAllOrders(
+            @PathVariable Long customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orders = orderService.getAllOrders(customerId, pageable);
+
+        PagedModel<EntityModel<OrderDTO>> pagedModel = pagedResourcesAssembler
+                .toModel(orders, orderModelAssembler);
+
+        return ResponseEntity.ok(pagedModel);
     }
 
     /**
-     * Retrieves a specific order by its ID.
+     * Retrieves a specific order by ID.
      *
      * @param id The ID of the order.
-     * @return The order with the specified ID.
+     * @return The order details with HATEOAS links.
+     * @throws com.example.exception.ResourceNotFoundException if the order is not
+     *                                                         found.
      */
-    @GetMapping("/orders/{id}")
-    public Order getOrder(@PathVariable int id) {
-        return orderService.getOrder(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<EntityModel<OrderDTO>> getOrder(@PathVariable Long id) {
+        Order order = orderService.getOrder(id);
+        return ResponseEntity.ok(orderModelAssembler.toModel(order));
     }
 
     /**
      * Updates an existing order.
      *
      * @param order The order object containing updated details.
-     * @return The updated order.
+     * @return The updated order as a DTO.
+     * @throws com.example.exception.BadRequestException       if the order details
+     *                                                         are invalid.
+     * @throws com.example.exception.ResourceNotFoundException if the order does not
+     *                                                         exist.
      */
-    @PutMapping("/orders/{id}")
-    public Order updateOrder(@PathVariable int id, @RequestBody Order order) {
-        return orderService.updateOrder(order, id);
+    @PutMapping
+    public ResponseEntity<OrderDTO> updateOrder(@Validated @RequestBody Order order) {
+        Order updatedOrder = orderService.updateOrder(order);
+        return ResponseEntity
+                .ok(new OrderDTO(updatedOrder.getId(), updatedOrder.getCreatedAt(), updatedOrder.getQuantity()));
     }
 
     /**
      * Deletes an order by its ID.
      *
      * @param id The ID of the order to be deleted.
-     * @return The deleted order.
+     * @return A response message confirming deletion.
+     * @throws com.example.exception.ResourceNotFoundException if the order does not
+     *                                                         exist.
      */
-    @DeleteMapping("/orders/{id}")
-    public Order deleteOrder(@PathVariable int id) {
-        return orderService.deleteOrder(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok("Order deleted successfully");
+    }
+
+    /**
+     * Retrieves orders within a specific date range.
+     *
+     * @param startDate The start date-time of the range.
+     * @param endDate   The end date-time of the range.
+     * @return A list of orders within the specified date range.
+     */
+    @GetMapping("/bydate")
+    public ResponseEntity<List<Order>> getOrdersByDateRange(
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate) {
+        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate, endDate));
+    }
+
+    /**
+     * Retrieves a list of orders sorted by creation date.
+     *
+     * @param sortDirection The sorting direction (asc/desc).
+     * @return A sorted list of orders.
+     */
+    @GetMapping("/sorted")
+    public ResponseEntity<List<Order>> getOrdersSorted(@RequestParam String sortDirection) {
+        return ResponseEntity.ok(orderService.getOrdersSorted(sortDirection));
     }
 }

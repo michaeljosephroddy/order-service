@@ -22,7 +22,7 @@ import jakarta.persistence.Table;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String name;
     private String email;
     private String address;
@@ -36,7 +36,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(int id, String name, String email, String address, LocalDateTime createdAt,
+    public Customer(Long id, String name, String email, String address, LocalDateTime createdAt,
             Integer totalOrders) {
         this.id = id;
         this.name = name;
@@ -46,11 +46,11 @@ public class Customer {
         this.totalOrders = totalOrders;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

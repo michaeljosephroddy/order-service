@@ -3,21 +3,24 @@ package com.example.order_service.model;
 import java.time.LocalDateTime;
 
 public class OrderDTO {
-    private int id;
+    private Long id;
     private LocalDateTime createdAt;
-    private int quantity;
+    private Integer quantity;
 
-    public OrderDTO(int id, LocalDateTime createdAt, int quantity) {
+    public OrderDTO() {
+    }
+
+    public OrderDTO(Long id, LocalDateTime createdAt, Integer quantity) {
         this.id = id;
         this.createdAt = createdAt;
         this.quantity = quantity;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -29,11 +32,11 @@ public class OrderDTO {
         this.createdAt = createdAt;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

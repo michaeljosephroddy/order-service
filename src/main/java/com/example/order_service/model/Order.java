@@ -21,9 +21,9 @@ import jakarta.persistence.Table;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "customer_id")
-    private int customerId;
+    private Long customerId;
     private String product;
     private Integer quantity;
     @CreatedDate
@@ -34,7 +34,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(int id, int customerId, String product, Integer quantity, LocalDateTime createdAt) {
+    public Order(Long id, Long customerId, String product, Integer quantity, LocalDateTime createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.product = product;
@@ -42,19 +42,19 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getCustomerId() {
+    public Long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
 
@@ -70,7 +70,7 @@ public class Order {
         return quantity != null ? quantity : 0;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
