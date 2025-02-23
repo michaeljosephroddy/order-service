@@ -1,173 +1,303 @@
-## **Order Service API**
+# Development and Demonstration of a REST API
 
-### **Description**
+## 1. Introduction
 
-The Order Service API is a RESTful service developed with a microservices architecture. It showcases proficiency in modern API development, demonstrating key features such as:
+### 1.1 Overview
 
-- One-to-Many Relationships
-- Use of Date Objects
-- Data Transfer Objects (DTOs)
-- Robust Error Handling
-- HATEOAS Compliance
-- Pagination
+This assignment involved developing a REST API using Spring Boot to manage customer orders, focusing on core microservices principles. The app includes two primary entities: Customer and Order, linked by a one-to-many relationship. The API supports CRUD operations, pagination, date filtering, and HATEOAS for hypermedia-driven navigation.
 
----
+### 1.2 Objectives
 
-### **Features**
+1. Implement a scalable REST API adhering to RESTful standards.
 
-1. **One-to-Many Relationship**
+2. Model a one-to-many relationship between customers and orders.
 
-- The API showcases a one-to-many relationship between Customers and Orders.
-- A Customer can have multiple Orders, demonstrating a real-world business model.
-- Supported operations:
-  - Retrieve all orders for a specific customer.
-  - Create, update, and delete orders linked to a customer.
-  - Cascading delete: Deleting a customer also deletes their associated orders.
+3. Use DTOs to decouple internal data models from external API responses.
 
-2. **Using Date Objects**
+4. Handle date/time inputs using LocalDateTime with proper serialisation.
 
-- The API handles date inputs and outputs, using Date objects to:
-  - Accept and validate date inputs (e.g., order placement date).
-  - Format dates consistently using ISO 8601 (YYYY-MM-DD).
-  - Filter and sort data based on dates, such as retrieving orders within a date range.
+5. Integrate HATEOAS to enable client navigation through hypermedia links.
 
-3. **Data Transfer Objects (DTOs)**
+6. Implement error handling for validation and exceptions.
 
-- DTOs are used to structure data between the client and server, ensuring:
-  - Decoupling of the internal data model from the API response.
-  - Clean, minimal responses exposing only essential fields.
-  - Example: `CustomerDTO` includes only name, email, and total orders.
+## 2. Design and Implementation
 
-4. **Error Handling**
+### 2.1 REST API Design
 
-- Robust error handling mechanisms provide meaningful feedback to API consumers, including:
-  - Input validation with appropriate HTTP status codes (e.g., 400 Bad Request, 404 Not Found).
-  - Structured error responses for unhandled exceptions.
-  - Example: If a user requests a non-existent order, the API returns a 404 error with "Order not found."
+#### One-to-Many Relationship
 
-5. **HATEOAS (Hypermedia as the Engine of Application State)**
+The API models a Customer-Order relationship:
 
-- Enhances discoverability by including hypermedia links in API responses, allowing clients to navigate the API easily.
-  - Example: When retrieving a customer, links are provided for fetching their orders, updating details, or deleting the customer.
+Customer (/api/customers): A customer can create multiple orders.
 
-6. **Pagination**
+Order (/api/orders): Each order is linked to a customer by customerId.
 
-- Manages large datasets efficiently by returning data in chunks, reducing server load and enhancing UI performance.
-- Example: Retrieving a subset of orders with configurable page sizes (e.g., 10 orders per request).
+Example Workflow:
 
----
+1. A POST request to `/api/customers creates a customer`.
 
-### **Endpoints Overview**
+2. A POST request to `/api/orders` creates an order with the customer’s ID.
 
-- **Customer Endpoints:**
+3. A GET request to `/api/orders/customer/{customerId}` retrieves all orders for that customer.
 
-  - `POST /api/customers` – Create a new customer
-  - `GET /api/customers` – Retrieve all customers
-  - `GET /api/customers/{id}/orders` – Retrieve all orders for a specific customer
-  - `DELETE /api/customers/{id}` – Delete a customer and associated orders
+#### Date Handling
 
-- **Order Endpoints:**
-  - `POST /api/orders` – Create a new order
-  - `GET /api/orders/{id}` – Retrieve a specific order
-  - `PUT /api/orders/{id}` – Update an existing order
-  - `DELETE /api/orders/{id}` – Delete an order
+LocalDateTime is used for timestamps (e.g., order creation time).
 
----
+The @JsonFormat annotation ensures consistent date serialisation:
 
-### **Technologies Used**
-
-- **Spring Boot** – For building the RESTful API.
-- **Spring Data JPA** – For database interactions.
-- **MySQL** – For database for development and testing.
-- **DTO Pattern** – For decoupling internal models from API responses.
-- **HATEOAS** – For hypermedia-driven API navigation.
-
----
-
-### **How to Run the Project**
-
-1. **Clone the repository:**
-
-```bash
-git clone https://github.com/michaeljosephroddy/order-service.git
+```java
+@CreatedDate
+@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+private LocalDateTime createdAt; // In Customer and Order entities
 ```
 
-2. **Navigate to the project directory:**
+Endpoints like `/api/orders/bydate` filter orders by date range using startDate and endDate.
 
-```bash
-cd order-service
+#### DTOs (Data Transfer Objects)
+
+DTOs simplify responses by exposing only necessary fields:
+
+CustomerDTO excludes sensitive fields like address.
+
+OrderDTO focuses on id, createdAt, and quantity.
+
+Why DTOs?
+
+Decouple internal database schema from external API contracts.
+
+Improve security by hiding implementation details.
+
+### 2.2 Database Design
+
+#### Entity-Relationship Diagram (ERD)
+
+```sql
++----------------+          +----------------+
+|   Customer     |          |     Order      |
++----------------+          +----------------+
+| id (PK)        |<-----+   | id (PK)        |
+| name           |      |-->| customer_id(FK)|
+| email          |          | product        |
+| address        |          | quantity       |
+| created_at     |          | created_at     |
+| total_orders   |          +----------------+
++----------------+
 ```
 
-3. **Build the project using Maven:**
+#### Tables
 
-```bash
-mvn clean install
+customers
+
+```sql
+CREATE TABLE customers (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    address VARCHAR(255),
+    created_at TIMESTAMP,
+    total_orders INT
+);
 ```
 
-4. **Run the application:**
+orders
 
-```bash
-mvn spring-boot:run
+```sql
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    customer_id BIGINT,
+    product VARCHAR(255),
+    quantity INT,
+    created_at TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
 ```
 
-The API will be accessible at `http://localhost:8080/api`.
+### 2.3 Error Handling
 
----
+Validation Errors:  
+Annotated with @Validated in controllers.
 
-### **Usage Examples**
+Example:
 
-- **Create a Customer:**
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name": "John Doe", "email": "john@example.com"}' http://localhost:8080/api/customers
+```java
+@PostMapping
+public ResponseEntity<CustomerDTO> createCustomer(@Validated @RequestBody Customer customer) { ... }
 ```
 
-- **Retrieve All Orders for a Customer:**
+Invalid requests trigger 400 Bad Request.
 
-```bash
-curl -X GET http://localhost:8080/api/customers/1/orders
+Custom Exceptions:
+
+ResourceNotFoundException: Thrown when a resource is not found (e.g., invalid customerId).
+
+BadRequestException: Handles invalid inputs (e.g., null customer name).
+
+Example Exception Response:
+
+```json
+{
+  "timestamp": "2023-11-05T14:30:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Customer with ID 99 not found."
+}
 ```
 
----
+### 2.4 HATEOAS Implementation
 
-### **Error Handling**
+Hypermedia Links are embedded in responses using Spring HATEOAS.
 
-The API provides structured error responses, such as:
+For example:
 
-- `404 Not Found`: When a requested resource is not found.
-- `400 Bad Request`: When input validation fails.
-- `500 Internal Server Error`: For unhandled exceptions.
+The CustomerModelAssembler generates links for CustomerDTO responses:
 
----
-
-### **Project Structure**
-
-```
-order-service
-│   pom.xml
-│   README.md
-└───src
-    └───main
-        └───java
-            └───com.example.order_service
-                │   Application.java
-                ├───controller
-                │       OrderController.java
-                ├───model
-                │       Customer.java
-                │       Order.java
-                ├───repository
-                │       CustomerRepository.java
-                │       OrderRepository.java
-                └───service
-                        OrderService.java
-                        OrderServiceImpl.java
+```java
+public class CustomerModelAssembler extends RepresentationModelAssemblerSupport<Customer, EntityModel<CustomerDTO>> {
+    @Override
+    public EntityModel<CustomerDTO> toModel(Customer customer) {
+        CustomerDTO dto = new CustomerDTO(...);
+        return EntityModel.of(dto,
+            linkTo(methodOn(CustomerController.class).getCustomerById(customer.getId())).withSelfRel(),
+            linkTo(methodOn(OrderController.class).getAllOrders(customer.getId(), 0, 10)).withRel("orders"));
+    }
+}
 ```
 
-### **Future Improvements**
+Sample HATEOAS Response:
 
-- Implementing authentication and authorization.
-- Expanding pagination options for more flexible data retrieval.
-- Adding unit and integration tests for enhanced test coverage.
+```json
+{
+  "id": 1,
+  "name": "Alice Brown",
+  "email": "alice@example.com",
+  "totalOrders": 2,
+  "_links": {
+    "self": { "href": "http://localhost:8080/api/customers/1" },
+    "orders": {
+      "href": "http://localhost:8080/api/orders/customer/1?page=0&size=10"
+    }
+  }
+}
+```
 
----
+## 3. Code Explanation
+
+### 3.1 Layers and Architecture
+
+#### Controller Layer
+
+CustomerController:
+
+Maps endpoints like POST `/api/customers` and GET `/api/customers/{id}`.
+
+OrderController:
+
+Supports pagination via Pageable:
+
+```java
+@GetMapping("/customer/{customerId}")
+public ResponseEntity<PagedModel<EntityModel<OrderDTO>>> getAllOrders(
+    @PathVariable Long customerId,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) { ... }
+```
+
+#### Service Layer
+
+CustomerService:
+
+Validates inputs (e.g., non-empty customer name).
+
+Cascades deletes: When a customer is deleted, all associated orders are removed:
+
+```java
+public void deleteCustomer(Long customerId) {
+    orderRepository.deleteByCustomerId(customerId); // Delete orders first
+    customerRepository.deleteById(customerId); // Delete customer
+}
+```
+
+OrderService:
+
+Implements date filtering:
+
+```java
+public List<Order> getOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    return orderRepository.findByCreatedAtBetween(startDate, endDate);
+}
+```
+
+#### Repository Layer
+
+Uses Spring Data JPA interfaces (CustomerRepository, OrderRepository) for database operations.
+
+### 3.2 Key Code Snippets
+
+One-to-Many Relationship in Order Entity:
+
+```java
+@Entity
+@Table(name = "orders")
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "customer_id")
+    private Long customerId; // Foreign key to Customer
+    // Other fields omitted
+}
+```
+
+DTO Implementation (OrderDTO):
+
+```java
+public class OrderDTO {
+    private Long id;
+    private LocalDateTime createdAt;
+    private Integer quantity;
+    // Getters and setters
+}
+```
+
+## 4. Challenges and Solutions
+
+### 4.1 Challenge: Cascading Deletes
+
+Issue: Deleting a customer without removing orders caused foreign key constraint violations.
+
+Solution: Explicitly delete orders first using orderRepository.deleteByCustomerId(customerId).
+
+### 4.2 Challenge: Date Serialisation
+
+Issue: LocalDateTime was serialised in an unreadable format (e.g., 2023-11-05T14:30:00.000Z).
+
+Solution: Added @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") to format timestamps.
+
+### 4.3 Challenge: HATEOAS Pagination
+
+Issue: Generating HATEOAS links for paginated order lists.
+
+Solution: Used PagedResourcesAssembler to wrap paginated results with navigation links:
+
+```java
+@Autowired
+private PagedResourcesAssembler<Order> pagedResourcesAssembler;
+public ResponseEntity<PagedModel<EntityModel<OrderDTO>>> getAllOrders(...) {
+    Page<Order> orders = orderService.getAllOrders(customerId, pageable);
+    PagedModel<EntityModel<OrderDTO>> pagedModel = pagedResourcesAssembler.toModel(orders, orderModelAssembler);
+    return ResponseEntity.ok(pagedModel);
+}
+```
+
+## 5. Conclusion
+
+This project successfully implemented a RESTful API using Spring Boot, demonstrating key microservices concepts such as layered architecture, DTOs, HATEOAS, and error handling.
+
+Future improvements could include:
+
+1. Adding authentication/authorisation via Spring Security.
+
+2. Implementing Spring Data REST for automated HATEOAS.
+
+3. Integrating Swagger for API documentation.
