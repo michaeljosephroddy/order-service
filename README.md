@@ -1,10 +1,8 @@
 # Development and Demonstration of a REST API
 
-## 1. Introduction
-
 ### 1.1 Overview
 
-This assignment involved developing a REST API using Spring Boot to manage customer orders, focusing on core microservices principles. The app includes two primary entities: Customer and Order, linked by a one-to-many relationship. The API supports CRUD operations, pagination, date filtering, and HATEOAS for hypermedia-driven navigation.
+Developing a REST API using Spring Boot to manage customer orders, focusing on core microservices principles. The app includes two primary entities: Customer and Order, linked by a one-to-many relationship. The API supports CRUD operations, pagination, date filtering, and HATEOAS for hypermedia-driven navigation.
 
 ### 1.2 Objectives
 
