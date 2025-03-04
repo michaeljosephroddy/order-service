@@ -49,7 +49,7 @@ The @JsonFormat annotation ensures consistent date serialisation:
 ```java
 @CreatedDate
 @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-private LocalDateTime createdAt; // In Customer and Order entities
+private LocalDateTime createdAt;
 ```
 
 Endpoints like `/api/orders/bydate` filter orders by date range using startDate and endDate.
@@ -213,8 +213,8 @@ Cascades deletes: When a customer is deleted, all associated orders are removed:
 
 ```java
 public void deleteCustomer(Long customerId) {
-    orderRepository.deleteByCustomerId(customerId); // Delete orders first
-    customerRepository.deleteById(customerId); // Delete customer
+    orderRepository.deleteByCustomerId(customerId);
+    customerRepository.deleteById(customerId);
 }
 ```
 
@@ -244,8 +244,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "customer_id")
-    private Long customerId; // Foreign key to Customer
-    // Other fields omitted
+    private Long customerId;
 }
 ```
 
@@ -256,7 +255,6 @@ public class OrderDTO {
     private Long id;
     private LocalDateTime createdAt;
     private Integer quantity;
-    // Getters and setters
 }
 ```
 
@@ -301,3 +299,21 @@ Future improvements could include:
 2. Implementing Spring Data REST for automated HATEOAS.
 
 3. Integrating Swagger for API documentation.
+
+## 6. References
+
+Carnell, J. (2017) Spring Microservices in Action. Shelter Island, NY: Manning Publications.
+
+Spring Boot Documentation (n.d.) Spring Boot Reference Documentation. Available at: https://docs.spring.io/spring-boot/documentation.html (Accessed: 24 February 2025).
+
+Spring Data JPA Documentation (n.d.) Getting Started with Spring Data JPA. Available at: https://docs.spring.io/spring-data/jpa/reference/jpa/getting-started.html (Accessed: 24 February 2025).
+
+Spring HATEOAS Documentation (n.d.) Spring HATEOAS Reference Documentation. Available at: https://docs.spring.io/spring-hateoas/docs/current/reference/html/ (Accessed: 24 February 2025).
+
+Baeldung (2013) Exception Handling in Spring MVC. Available at: https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc (Accessed: 24 February 2025).
+
+Baeldung (n.d.) Exception Handling for REST with Spring. Available at: https://www.baeldung.com/exception-handling-for-rest-with-spring (Accessed: 24 February 2025).
+
+Baeldung (n.d.) Entity to and from DTO for a Java Spring Application. Available at: https://www.baeldung.com/entity-to-and-from-dto-for-a-java-spring-application (Accessed: 24 February 2025).
+
+Baeldung (n.d.) Spring Boot Paged Query – Retrieve All Results. Available at: https://www.baeldung.com/spring-boot-paged-query-all-results (Accessed: 24 February 2025).
