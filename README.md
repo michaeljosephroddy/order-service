@@ -1,10 +1,10 @@
 # Development and Demonstration of a REST API
 
-### 1.1 Overview
+### 1. Overview
 
 Developing a REST API using Spring Boot to manage customer orders, focusing on core microservices principles. The app includes two primary entities: Customer and Order, linked by a one-to-many relationship. The API supports CRUD operations, pagination, date filtering, and HATEOAS for hypermedia-driven navigation.
 
-### 1.2 Objectives
+### 1.1 Objectives
 
 1. Implement a scalable REST API adhering to RESTful standards.
 
