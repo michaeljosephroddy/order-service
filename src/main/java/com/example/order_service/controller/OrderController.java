@@ -1,6 +1,8 @@
 package com.example.order_service.controller;
 
-import com.example.hateoas.OrderModelAssembler;
+import com.example.order_service.exception.BadRequestException;
+import com.example.order_service.exception.ResourceNotFoundException;
+import com.example.order_service.hateoas.OrderModelAssembler;
 import com.example.order_service.model.Order;
 import com.example.order_service.model.OrderDTO;
 import com.example.order_service.service.OrderService;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for handling order-related operations.
@@ -75,7 +76,7 @@ public class OrderController {
      *
      * @param id The ID of the order.
      * @return The order details with HATEOAS links.
-     * @throws com.example.exception.ResourceNotFoundException if the order is not
+     * @throws ResourceNotFoundException if the order is not
      *                                                         found.
      */
     @GetMapping("/{id}")
@@ -89,9 +90,9 @@ public class OrderController {
      *
      * @param order The order object containing updated details.
      * @return The updated order as a DTO.
-     * @throws com.example.exception.BadRequestException       if the order details
+     * @throws BadRequestException       if the order details
      *                                                         are invalid.
-     * @throws com.example.exception.ResourceNotFoundException if the order does not
+     * @throws ResourceNotFoundException if the order does not
      *                                                         exist.
      */
     @PutMapping
@@ -106,7 +107,7 @@ public class OrderController {
      *
      * @param id The ID of the order to be deleted.
      * @return A response message confirming deletion.
-     * @throws com.example.exception.ResourceNotFoundException if the order does not
+     * @throws ResourceNotFoundException if the order does not
      *                                                         exist.
      */
     @DeleteMapping("/{id}")

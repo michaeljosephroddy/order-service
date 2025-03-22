@@ -1,6 +1,7 @@
 package com.example.order_service.controller;
 
-import com.example.hateoas.CustomerModelAssembler;
+import com.example.order_service.exception.ResourceNotFoundException;
+import com.example.order_service.hateoas.CustomerModelAssembler;
 import com.example.order_service.model.Customer;
 import com.example.order_service.model.CustomerDTO;
 import com.example.order_service.service.CustomerService;
@@ -58,7 +59,7 @@ public class CustomerController {
      *
      * @param id The ID of the customer.
      * @return The customer details with HATEOAS links.
-     * @throws com.example.exception.ResourceNotFoundException if the customer is
+     * @throws ResourceNotFoundException if the customer is
      *                                                         not found.
      */
     @GetMapping("/{id}")
@@ -72,7 +73,7 @@ public class CustomerController {
      *
      * @param id The ID of the customer to delete.
      * @return A response message confirming the deletion.
-     * @throws com.example.exception.ResourceNotFoundException if the customer does
+     * @throws ResourceNotFoundException if the customer does
      *                                                         not exist.
      */
     @DeleteMapping("/{id}")

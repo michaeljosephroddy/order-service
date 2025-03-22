@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.exception.BadRequestException;
-import com.example.exception.ResourceNotFoundException;
+import com.example.order_service.exception.BadRequestException;
+import com.example.order_service.exception.ResourceNotFoundException;
 import com.example.order_service.model.Customer;
 import com.example.order_service.model.Order;
 import com.example.order_service.repository.CustomerRepository;

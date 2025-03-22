@@ -1,4 +1,4 @@
-package com.example.hateoas;
+package com.example.order_service.hateoas;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 

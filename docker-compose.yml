@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: onlinestore
+      MYSQL_USER: demouser
+      MYSQL_PASSWORD: demouserpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+
+  online-store-service:
+    image: openjdk:21-jdk-slim  # Using OpenJDK 21 base image
+    container_name: online-store-service-container
+    restart: always
+    depends_on:
+      - mysql
+    entrypoint: ["sh", "-c", "sleep 20 && java -jar /app/order-service-0.0.1-SNAPSHOT.jar"]  # Assuming app.jar is in /app directory
+    environment:
+      SPRING_APPLICATION_NAME: online-store-service
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/onlinestore
+      SPRING_DATASOURCE_USERNAME: demouser
+      SPRING_DATASOURCE_PASSWORD: demouserpassword
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target:/app  # Assuming the app.jar is in the ./target directory on the host machine
+
+volumes:
+  mysql_data:
