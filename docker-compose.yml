@@ -17,7 +17,7 @@ services:
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
 
   online-store-service:
-    image: openjdk:21-jdk-slim  # Using OpenJDK 21 base image
+    image: michaelroddy04/online-store-service
     container_name: online-store-service-container
     restart: always
     depends_on:

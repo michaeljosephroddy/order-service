@@ -18,7 +18,7 @@ pipeline {
 
         stage('Create Docker Image and Push Docker Image to DockerHub') {
             steps {
-                sh 'docker-compose build online-store-service .'
+                sh 'docker-compose build online-store-service'
                  withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
                     sh 'docker tag online-store-service michaelroddy04/online-store-service'
                     sh 'docker push michaelroddy04/online-store-service'
