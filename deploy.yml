@@ -3,12 +3,6 @@
   hosts: ec2
   become: yes # Run as sudo
   tasks:
-    - name: Install Docker if not already installed
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
-
     - name: Ensure Docker service is running
       systemd:
         name: docker
