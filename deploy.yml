@@ -1,0 +1,36 @@
+---
+- name: Install Docker & Deploy Online Store Service
+  hosts: ec2
+  become: yes # Run as sudo
+  tasks:
+    - name: Install Docker if not already installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add "ubuntu" user to docker group (avoids sudo requirement)
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Pull latest version of the Docker image
+      community.docker.docker_image:
+        name: michaelroddy04/online-store-service
+        source: pull
+
+    - name: Run the Docker container
+      community.docker.docker_container:
+        name: online-store-service
+        image: michaelroddy04/online-store-service
+        state: started
+        restart_policy: always
+        published_ports:
+          - "8080:8080"

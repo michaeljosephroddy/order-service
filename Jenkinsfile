@@ -1,7 +1,17 @@
 pipeline {
     agent any
+    environment {
+        JAVA_HOME = tool 'JDK21' // The name you set in Jenkins UI
+        PATH = "${JAVA_HOME}/bin:${PATH}"
+    }
 
     stages {
+        stage('Check Java Version') {
+            steps {
+                sh 'java -version'
+            }
+        }
+
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/michaeljosephroddy/online-store-service.git'
@@ -26,6 +36,11 @@ pipeline {
             }
         }
 
-//         just making a change to test auto build trigger
+        stage('Run Ansible for Automated Deployment') {
+            steps {
+                sh 'ansible-playbook'
+            }
+        }
+
     }
 }
