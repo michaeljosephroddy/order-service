@@ -6,4 +6,6 @@ COPY ./target/order-service-0.0.1-SNAPSHOT.jar /app/order-service-0.0.1-SNAPSHOT
 
 EXPOSE 8080
 
+EXPOSE 3306
+
 ENTRYPOINT ["java", "-jar", "/app/order-service-0.0.1-SNAPSHOT.jar"]
