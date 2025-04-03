@@ -1,6 +1,6 @@
 ---
 - name: Deploy custom Docker container on EC2
-  hosts: ec2_instance
+  hosts: ec2
   become: yes
   tasks:
     - name: Pull custom Docker image
