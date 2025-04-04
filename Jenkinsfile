@@ -18,15 +18,21 @@ pipeline {
             }
         }
 
-        stage('Build with Maven and Static Code Analysis') {
-            steps{
+        stage('Build and Package') {
+            steps {
+                sh "mvn clean package verify"
+        }
+}
+
+        stage('Static Code Analysis') {
+            steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "mvn clean package verify sonar:sonar -Dsonar.projectKey=sonar-project-local -Dsonar.projectName='sonar-project-local'"
-                }
+                sh "mvn sonar:sonar -Dsonar.projectKey=sonar-project-local -Dsonar.projectName='sonar-project-local'"
             }
         }
+}
 
-        stage('Create Docker Image and Push Docker Image to DockerHub') {
+        stage('Build and Push Docker Image') {
             steps {
                 sh 'docker build -t michaelroddy04/online-store-service .'
                  withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
