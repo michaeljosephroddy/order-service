@@ -21,15 +21,15 @@ pipeline {
         stage('Build with Maven and Static Code Analysis') {
             steps{
                 withSonarQubeEnv('SonarQube') {
-                    sh "mvn clean verify sonar:sonar -Dsonar.projectKey=sonar-project-local -Dsonar.projectName='sonar-project-local'"
+                    sh "mvn clean package verify sonar:sonar -Dsonar.projectKey=sonar-project-local -Dsonar.projectName='sonar-project-local'"
                 }
             }
         }
 
         stage('Create Docker Image and Push Docker Image to DockerHub') {
             steps {
-                sh 'docker-compose build online-store-service'
-                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
+                sh 'docker build -t michaelroddy04/online-store-service .'
+                 withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
                     sh 'docker tag online-store-service michaelroddy04/online-store-service'
                     sh 'docker push michaelroddy04/online-store-service'
                  }
@@ -38,7 +38,9 @@ pipeline {
 
         stage('Run Ansible for Automated Deployment') {
             steps {
-                sh 'ansible-playbook'
+                sh 'sudo chmod 400 lab1webserverkeypair.pem'
+                sh 'ansible-playbook -i inventory.ini deploy.yml
+'
             }
         }
 
