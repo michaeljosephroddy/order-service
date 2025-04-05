@@ -45,8 +45,7 @@ pipeline {
         stage('Run Ansible for Automated Deployment') {
             steps {
                 sh 'sudo chmod 400 lab1webserverkeypair.pem'
-                sh 'ansible-playbook -i inventory.ini deploy.yml
-'
+                sh 'ansible-playbook -i inventory.ini deploy.yml'
             }
         }
 

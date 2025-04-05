@@ -39,6 +39,13 @@ public class OrderService {
         if (order == null) {
             throw new BadRequestException("Order cannot be null");
         }
+        if (order.getProduct() == null || order.getProduct().isEmpty()) {
+            throw new BadRequestException("Product cannot be null or empty");
+        }
+        if (order.getQuantity() == null || order.getQuantity() <= 0) {
+            throw new BadRequestException("Quantity must be greater than 0");
+        }
+
         return orderRepository.save(order);
     }
 
