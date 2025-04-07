@@ -14,7 +14,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/michaeljosephroddy/online-store-service.git'
+                git branch: 'main', url: 'https://github.com/michaeljosephroddy/order-service.git'
             }
         }
 
@@ -44,7 +44,7 @@ pipeline {
 
         stage('Run Ansible for Automated Deployment') {
             steps {
-                sh 'sudo chmod 400 lab1webserverkeypair.pem'
+                sh 'chmod 400 lab1webserverkeypair.pem'
                 sh 'ansible-playbook -i inventory.ini deploy.yml'
             }
         }

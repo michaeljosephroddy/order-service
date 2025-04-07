@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.order_service.exception.BadRequestException;
 import com.example.order_service.exception.ResourceNotFoundException;
-import com.example.order_service.model.Customer;
 import com.example.order_service.model.Order;
 import com.example.order_service.repository.CustomerRepository;
 import com.example.order_service.repository.OrderRepository;
