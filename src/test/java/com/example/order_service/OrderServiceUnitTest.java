@@ -20,20 +20,20 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.order_service.exception.BadRequestException;
 import com.example.order_service.exception.ResourceNotFoundException;
-import com.example.order_service.model.Customer;
 import com.example.order_service.model.Order;
-import com.example.order_service.repository.CustomerRepository;
+import com.example.order_service.model.Customer;
 import com.example.order_service.repository.OrderRepository;
+import com.example.order_service.repository.CustomerRepository;
 import com.example.order_service.service.OrderService;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceTest {
+public class OrderServiceUnitTest {
 
     @Mock
     private OrderRepository orderRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private CustomerRepository customerRepository; // Add this mock
 
     @InjectMocks
     private OrderService orderService;
@@ -49,6 +49,10 @@ public class OrderServiceTest {
         testCustomer = new Customer();
         testCustomer.setId(1L);
         testCustomer.setName("Test Customer");
+        testCustomer.setEmail("test@example.com");
+        testCustomer.setAddress("123 Test Lane");
+        testCustomer.setCreatedAt(testDateTime);
+        testCustomer.setTotalOrders(0);
 
         testOrder = new Order();
         testOrder.setId(1L);
@@ -61,6 +65,7 @@ public class OrderServiceTest {
     @Test
     void createOrder_WithValidOrder_ShouldReturnSavedOrder() {
         // Given
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(testCustomer)); // Mock customer existence
         when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
 
         // When
@@ -70,6 +75,7 @@ public class OrderServiceTest {
         assertNotNull(savedOrder);
         assertEquals(testOrder.getId(), savedOrder.getId());
         assertEquals(testOrder.getProduct(), savedOrder.getProduct());
+        verify(customerRepository, times(1)).findById(1L); // Verify customer lookup
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
@@ -105,7 +111,7 @@ public class OrderServiceTest {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
         Page<Order> ordersPage = new PageImpl<>(Arrays.asList(testOrder));
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(testCustomer));
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(testCustomer)); // Mock customer existence
         when(orderRepository.findByCustomerId(1L, pageable)).thenReturn(ordersPage);
 
         // When
@@ -114,7 +120,7 @@ public class OrderServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
-        verify(customerRepository, times(1)).findById(1L);
+        verify(customerRepository, times(1)).findById(1L); // Verify customer lookup
         verify(orderRepository, times(1)).findByCustomerId(1L, pageable);
     }
 
@@ -122,11 +128,11 @@ public class OrderServiceTest {
     void getAllOrders_WithNonExistingCustomer_ShouldThrowResourceNotFoundException() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
-        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+        when(customerRepository.findById(1L)).thenReturn(Optional.empty()); // Mock non-existing customer
 
         // When & Then
         assertThrows(ResourceNotFoundException.class, () -> orderService.getAllOrders(1L, pageable));
-        verify(customerRepository, times(1)).findById(1L);
+        verify(customerRepository, times(1)).findById(1L); // Verify customer lookup
         verify(orderRepository, never()).findByCustomerId(anyLong(), any(Pageable.class));
     }
 

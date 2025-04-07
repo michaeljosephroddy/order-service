@@ -23,7 +23,7 @@ import com.example.order_service.repository.OrderRepository;
 import com.example.order_service.service.CustomerService;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomerServiceTest {
+public class CustomerServiceUnitTest {
 
     @Mock
     private CustomerRepository customerRepository;

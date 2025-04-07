@@ -286,6 +286,130 @@ public ResponseEntity<PagedModel<EntityModel<OrderDTO>>> getAllOrders(...) {
 }
 ```
 
+## 7. Testing Strategy
+
+This application follows a comprehensive testing strategy based on the **Test Pyramid**, ensuring that the system is thoroughly tested at all levels. The pyramid emphasises having a larger number of fast, isolated unit tests, a moderate number of integration tests, and a smaller number of acceptance tests.
+
+### 7.1 Test Pyramid Overview
+
+The **Test Pyramid** is a best-practice testing strategy that balances different types of tests to achieve high-quality software:
+
+1. **Unit Tests** (Base of the Pyramid):
+
+   - Fast and isolated tests that validate individual components (e.g., services, utilities).
+   - Focus on testing business logic in isolation without external dependencies.
+   - High volume of tests to cover edge cases and ensure correctness.
+
+2. **Integration Tests** (Middle of the Pyramid):
+
+   - Validate the interaction between components (e.g., controllers, services, repositories).
+   - Use an in-memory database (H2) to simulate real-world scenarios.
+   - Moderate volume of tests to ensure components work together as expected.
+
+3. **Acceptance Tests** (Top of the Pyramid):
+   - High-level tests that validate end-to-end workflows and business requirements.
+   - Simulate real-world usage of the application through API calls.
+   - Smaller volume of tests to ensure critical workflows meet user expectations.
+
+---
+
+### 7.2 Unit Testing
+
+- **Purpose**: Validate the correctness of individual components in isolation.
+- **Tools**: JUnit 5, Mockito.
+- **Scope**:
+  - Service layer methods (e.g., `CustomerService`, `OrderService`).
+  - Utility classes and helper methods.
+- **Example**:
+
+  ```java
+  @Test
+  void calculateTotalOrders_ShouldReturnCorrectCount() {
+      // Given
+      List<Order> orders = List.of(new Order(...), new Order(...));
+
+      // When
+      int totalOrders = orderService.calculateTotalOrders(orders);
+
+      // Then
+      assertEquals(2, totalOrders);
+  }
+  ```
+
+---
+
+### 7.3 Integration Testing
+
+- **Purpose**: Validate the interaction between components (e.g., controllers, services, repositories).
+- **Tools**: Spring Boot Test, MockMvc, H2 in-memory database.
+- **Scope**:
+  - Controller endpoints (e.g., `/api/customers`, `/api/orders`).
+  - Repository queries and database interactions.
+  - Service layer logic with real dependencies.
+- **Example**:
+
+  ```java
+  @Test
+  void createCustomer_ShouldPersistCustomer() throws Exception {
+      // Given
+      Map<String, Object> customerRequest = new HashMap<>();
+      customerRequest.put("name", "John Doe");
+      customerRequest.put("email", "john.doe@example.com");
+      customerRequest.put("address", "123 Test Street");
+
+      // When & Then
+      mockMvc.perform(post("/api/customers")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(customerRequest)))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.id").exists());
+  }
+  ```
+
+---
+
+### 7.4 Acceptance Testing
+
+- **Purpose**: Validate end-to-end workflows and ensure the application meets business requirements.
+- **Tools**: Spring MockMvc, ObjectMapper.
+- **Scope**:
+  - High-level workflows, such as creating a customer, placing an order, and retrieving orders.
+  - Simulate real-world API usage scenarios.
+- **Example**:
+
+  ```java
+  @Test
+  void createCustomerAndPlaceOrder_ShouldReturnOrderDetails() throws Exception {
+      // Given
+      Map<String, Object> customerRequest = new HashMap<>();
+      customerRequest.put("name", "Alice");
+      customerRequest.put("email", "alice@example.com");
+      customerRequest.put("address", "123 Test Lane");
+
+      String customerResponse = mockMvc.perform(post("/api/customers")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(customerRequest)))
+              .andReturn()
+              .getResponse()
+              .getContentAsString();
+
+      Long customerId = objectMapper.readTree(customerResponse).get("id").asLong();
+
+      Map<String, Object> orderRequest = new HashMap<>();
+      orderRequest.put("customerId", customerId);
+      orderRequest.put("product", "Test Product");
+      orderRequest.put("quantity", 2);
+
+      // When & Then
+      mockMvc.perform(post("/api/orders")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(orderRequest)))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.product").value("Test Product"))
+              .andExpect(jsonPath("$.quantity").value(2));
+  }
+  ```
+
 ## 5. Conclusion
 
 This project successfully implemented a RESTful API using Spring Boot, demonstrating key microservices concepts such as layered architecture, DTOs, HATEOAS, and error handling.

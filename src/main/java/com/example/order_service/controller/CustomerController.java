@@ -60,7 +60,7 @@ public class CustomerController {
      * @param id The ID of the customer.
      * @return The customer details with HATEOAS links.
      * @throws ResourceNotFoundException if the customer is
-     *                                                         not found.
+     *                                   not found.
      */
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<CustomerDTO>> getCustomerById(@PathVariable Long id) {
@@ -74,7 +74,7 @@ public class CustomerController {
      * @param id The ID of the customer to delete.
      * @return A response message confirming the deletion.
      * @throws ResourceNotFoundException if the customer does
-     *                                                         not exist.
+     *                                   not exist.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable Long id) {

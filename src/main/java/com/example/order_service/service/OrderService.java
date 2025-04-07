@@ -46,6 +46,10 @@ public class OrderService {
             throw new BadRequestException("Quantity must be greater than 0");
         }
 
+        // Validate customer existence
+        customerRepository.findById(order.getCustomerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+
         return orderRepository.save(order);
     }
 
