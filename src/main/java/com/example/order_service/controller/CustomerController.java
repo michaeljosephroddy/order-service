@@ -81,4 +81,14 @@ public class CustomerController {
         customerService.deleteCustomer(id);
         return ResponseEntity.ok("Cascading delete successful");
     }
+
+    /**
+     * Dummy endpoint for testing purposes.
+     *
+     * @return A simple message indicating the endpoint was called.
+     */
+    @GetMapping("/dummy")
+    public ResponseEntity<String> dummyEndpoint() {
+        return ResponseEntity.ok("Dummy endpoint reached");
+    }
 }
