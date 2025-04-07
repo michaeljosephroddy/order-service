@@ -60,7 +60,7 @@ public class CustomerService {
      * @throws ResourceNotFoundException if the customer does not exist.
      */
     public void deleteCustomer(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
+        customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Cannot delete. Customer with ID " + customerId + " not found."));
 
