@@ -28,6 +28,16 @@ public class CustomerController {
     private CustomerModelAssembler customerModelAssembler;
 
     /**
+     * Dummy endpoint for testing purposes.
+     *
+     * @return A simple message indicating the endpoint was called.
+     */
+    @GetMapping("/test/dummy")
+    public ResponseEntity<String> dummyEndpoint() {
+        return ResponseEntity.ok("Dummy endpoint reached");
+    }
+
+    /**
      * Creates a new customer.
      *
      * @param customer The customer object to be created.
@@ -80,15 +90,5 @@ public class CustomerController {
     public ResponseEntity<String> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.ok("Cascading delete successful");
-    }
-
-    /**
-     * Dummy endpoint for testing purposes.
-     *
-     * @return A simple message indicating the endpoint was called.
-     */
-    @GetMapping("/dummy")
-    public ResponseEntity<String> dummyEndpoint() {
-        return ResponseEntity.ok("Dummy endpoint reached");
     }
 }
