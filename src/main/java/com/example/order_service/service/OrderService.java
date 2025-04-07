@@ -60,7 +60,7 @@ public class OrderService {
      * @return A list of all orders for the specified customer.
      */
     public Page<Order> getAllOrders(Long customerId, Pageable pageable) {
-        Customer customer = customerRepository.findById(customerId)
+        customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Cannot get all orders. Customer with ID " + customerId + " not found."));
         return orderRepository.findByCustomerId(customerId, pageable);
